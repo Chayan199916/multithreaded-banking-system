@@ -3,8 +3,8 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Bank {
     private final ConcurrentHashMap<Integer, BankAccount> accounts = new ConcurrentHashMap<>();
 
-    public void addAccount(int accountId, double initialBalance) {
-        accounts.put(accountId, new BankAccount(initialBalance));
+    public void addAccount(int accountId, double initialBalance, double overdraftLimit) {
+        accounts.put(accountId, new BankAccount(initialBalance, overdraftLimit));
     }
 
     public BankAccount getAccount(int accountId) {
@@ -18,7 +18,7 @@ public class Bank {
         fromAccount.getLock().lock();
         toAccount.getLock().lock();
         try {
-            if (fromAccount.getBalance() >= amount) {
+            if (fromAccount.getBalance() + fromAccount.getOverdraftLimit() >= amount) {
                 System.out.println("Transferring " + amount + " from " + fromAccountId + " to " + toAccountId);
                 fromAccount.withdraw(amount);
                 toAccount.deposit(amount);
